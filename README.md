@@ -6,9 +6,11 @@ Practice to Train and detect custom models on Yolov5 and publish Image message t
 ## Build
 1. Clone the repository
 > cd {ROS2 workspace path}/src
+
 > git clone https://github.com/dev-aalmonte/ros_obj_det.git
 2. Build and source
 > colcon build
+
 > source install/setup.bash
 3. Launch
 > ros2 launch ros_obj_det ros_obj_det.launch.py
@@ -24,7 +26,9 @@ Some labeling mention is also [LabelStudio](https://labelstud.io/) which can onl
 ### Training
 For training I use Yolov5, which is an older version of the training model, you can use the most recent version if needed. For the installation I follow the following instructions (Recommended: clone the repo outside of your workspace),
 > git clone https://github.com/ultralytics/yolov5  
+
 > cd yolov5
+
 > pip install -r requirements.txt 
 
 To do the training portion you need to execute this command
@@ -84,10 +88,9 @@ The final code looks something like this
 > y_pos = point + msg.fields[1].offset
 > z_pos = point + msg.fields[2].offset
 >
-> x = (msg.data[x_pos + 3] << 8*3) + (msg.data[x_pos + 2] << 8*2) + (msg.data[x_pos + 1] << 8) + msg.data[x_pos]
-> x = (msg.data[x_pos + 3] << 8*3) + (msg.data[x_pos + 2] << 8*2) + (msg.data[x_pos + 1] << 8) + msg.data[x_pos]
-> y = (msg.data[y_pos + 3] << 8*3) + (msg.data[y_pos + 2] << 8*2) + (msg.data[y_pos + 1] << 8) + msg.data[y_pos]
-> z = (msg.data[z_pos + 3] << 8*3) + (msg.data[z_pos + 2] << 8*2) + (msg.data[z_pos + 1] << 8) + msg.data[z_pos]
+> x = (msg.data[x_pos + 3] << 8 * 3) + (msg.data[x_pos + 2] << 8 * 2) + (msg.data[x_pos + 1] << 8) + msg.data[x_pos]
+> y = (msg.data[y_pos + 3] << 8 * 3) + (msg.data[y_pos + 2] << 8 * 2) + (msg.data[y_pos + 1] << 8) + msg.data[y_pos]
+> z = (msg.data[z_pos + 3] << 8 * 3) + (msg.data[z_pos + 2] << 8 * 2) + (msg.data[z_pos + 1] << 8) + msg.data[z_pos]
 >
 > endian = "<>"[msg.is_bigendian]
 >
