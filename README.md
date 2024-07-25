@@ -6,9 +6,11 @@ Practice to Train and detect custom models on Yolov5 and publish Image message t
 ## Build
 1. Clone the repository
 > cd {ROS2 workspace path}/src
+
 > git clone https://github.com/dev-aalmonte/ros_obj_det.git
 2. Build and source
 > colcon build
+
 > source install/setup.bash
 3. Launch
 > ros2 launch ros_obj_det ros_obj_det.launch.py
@@ -24,7 +26,9 @@ Some labeling mention is also [LabelStudio](https://labelstud.io/) which can onl
 ### Training
 For training I use Yolov5, which is an older version of the training model, you can use the most recent version if needed. For the installation I follow the following instructions (Recommended: clone the repo outside of your workspace),
 > git clone https://github.com/ultralytics/yolov5  
+
 > cd yolov5
+
 > pip install -r requirements.txt 
 
 To do the training portion you need to execute this command
