@@ -99,3 +99,33 @@ The final code looks something like this
 > z_float = struct.unpack(f'{endian}f', struct.pack('I', z))
 
 You can review the **yolo_obj_det.py** file to check the full ROS2 implementation.
+
+## AprilTag Detection
+An AprilTag is a QR like code that encodes a smaller message, but because of that each bit are increased in size and that makes it easy to distinguish from larger distance. It can also be used to know the position and rotation of the camara relative to the tag.
+
+### Implementation
+To implement the tag detection I decided to use this node created by [christianrauch](https://github.com/christianrauch), called [apriltag_ros](https://github.com/christianrauch/apriltag_ros).
+
+You just need to clone the node and build it and you are ready to go.
+
+I decided to integrate it into my existing launcher and the nodes receives the camera image topic and camera info topic, which can be given by doing the following:
+
+>Node(
+    package='apriltag_ros',
+    executable='apriltag_node',
+    name='apriltag_node',
+    output='screen',
+    remappings=[
+        ('image_rect', '/zed/zed_node/left_raw/image_raw_color'),
+        ('camera_info', '/zed/zed_node/left_raw/camera_info')
+    ],
+    parameters=[
+        {'params_file': tags_36h11_yaml_file}
+    ]
+),
+
+Where in the remapping array you change **image_rect** value, to your node that publishes the image and **camera_info** value with the node that publishes the information about the camera.
+
+In the parameters array, you need to change the **params_file** with the .yaml file of the tag family
+
+Once the node is running it will publish the AprilTag detected by the camera in **/detections** topic.

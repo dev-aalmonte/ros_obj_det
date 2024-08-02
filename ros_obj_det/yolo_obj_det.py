@@ -1,7 +1,7 @@
 import rclpy
 from rclpy.node import Node
 
-import struct
+from .point_cloud_conversion import get_xyz_from_point_xy
 
 import cv2
 from cv_bridge import CvBridge
@@ -32,8 +32,7 @@ class YoloObjDet(Node):
         self.publisher_ = self.create_publisher(
             Image,
             '/zed/zed_node/left_raw/image_highlight',
-            10
-        )
+            10)
         
         self.broadcaster = TransformBroadcaster(self)
         
@@ -59,27 +58,13 @@ class YoloObjDet(Node):
         if len(self.objects) > 0:
             for obj in self.objects:
                 w, h = obj['center_point']
-                point = w*msg.point_step + h*msg.row_step
+                x_float, y_float, z_float = get_xyz_from_point_xy(msg, w, h)
 
-                x_pos = point + msg.fields[0].offset
-                y_pos = point + msg.fields[1].offset
-                z_pos = point + msg.fields[2].offset
-
-                x = (msg.data[x_pos + 3] << 8*3) + (msg.data[x_pos + 2] << 8*2) + (msg.data[x_pos + 1] << 8) + msg.data[x_pos]
-                y = (msg.data[y_pos + 3] << 8*3) + (msg.data[y_pos + 2] << 8*2) + (msg.data[y_pos + 1] << 8) + msg.data[y_pos]
-                z = (msg.data[z_pos + 3] << 8*3) + (msg.data[z_pos + 2] << 8*2) + (msg.data[z_pos + 1] << 8) + msg.data[z_pos]
-
-                endian = "<>"[msg.is_bigendian]
-
-                x_float = struct.unpack(f'{endian}f', struct.pack('I', x))
-                y_float = struct.unpack(f'{endian}f', struct.pack('I', y))
-                z_float = struct.unpack(f'{endian}f', struct.pack('I', z))
-
-                if not x_float[0] != x_float[0]:
+                if not x_float != x_float:
                     self.objloc[obj['name']] = (
-                        round(x_float[0], 2),
-                        round(y_float[0], 2),
-                        round(z_float[0], 2)
+                        round(x_float, 2),
+                        round(y_float, 2),
+                        round(z_float, 2)
                     )
 
                     # Publish a TF
@@ -88,9 +73,9 @@ class YoloObjDet(Node):
                     t.header.frame_id = "zed_left_camera_frame"
                     t.child_frame_id = f"{obj['name']}_frame"
 
-                    t.transform.translation.x = x_float[0]
-                    t.transform.translation.y = y_float[0]
-                    t.transform.translation.z = z_float[0]
+                    t.transform.translation.x = x_float
+                    t.transform.translation.y = y_float
+                    t.transform.translation.z = z_float
 
                     self.broadcaster.sendTransform(t)
 
